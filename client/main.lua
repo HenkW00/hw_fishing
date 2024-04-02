@@ -1,13 +1,22 @@
 ESX = exports['es_extended']:getSharedObject()
 
 function StartFishingMiniGame()
+    local playerPed = PlayerPedId()
+    local playerCoords = GetEntityCoords(playerPed)
+
+    local waterCheckResult, waterZ = TestProbeAgainstWater(playerCoords.x, playerCoords.y, playerCoords.z + 10.0, playerCoords.x, playerCoords.y, playerCoords.z - 10.0)
+
+    if not waterCheckResult then
+        ESX.ShowNotification("~r~You must be near water to fish.")
+        return
+    end
+
     local fishingRodModel = GetHashKey("prop_fishing_rod_01")
     RequestModel(fishingRodModel)
     while not HasModelLoaded(fishingRodModel) do
         Citizen.Wait(100)
     end
 
-    local playerPed = PlayerPedId()
     TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_STAND_FISHING", 0, true)
     Citizen.Wait(500)
 

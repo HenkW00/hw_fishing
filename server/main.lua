@@ -1,16 +1,25 @@
 ESX = exports['es_extended']:getSharedObject()
 
-local function debugAndDiscordLog(message)
+local function debugAndDiscordLog(title, message)
+    -- Default values if nil
+    if not title then title = "Unknown Title" end
+    if not message then message = "No message provided" end
+
     if Config.mode == 'debug' then
-        print("^5[HW Fishing Debug]:^0 " .. message)
+        print("^5[HW Fishing Debug]:^0 " .. title .. " - " .. message)
     end
     if Config.discordLogging then
+        local iso8601Time = os.date("!%Y-%m-%dT%H:%M:%S%z") -- ISO 8601 format
         local data = {
             ["username"] = "Fishing Script",
             ["embeds"] = {{
-                ["title"] = "Fishing Notification",
+                ["title"] = title,
                 ["description"] = message,
-                ["color"] = 56108
+                ["color"] = 56108,
+                ["footer"] = {
+                    ["text"] = "HW Fishing Logs",
+                },
+                ["timestamp"] = iso8601Time
             }},
             ["avatar_url"] = "https://example.com/fish.png"
         }
@@ -23,7 +32,7 @@ ESX.RegisterUsableItem('fishing_rod', function(source)
     if xPlayer.getInventoryItem('bait').count > 0 then
         xPlayer.removeInventoryItem('bait', 1)
         TriggerClientEvent('hw_fishing:startFishingMiniGame', source)
-        debugAndDiscordLog("Player " .. xPlayer.getIdentifier() .. " started fishing.")
+        debugAndDiscordLog("Starting fishing", "Player " .. xPlayer.getIdentifier() .. " started fishing.")
     else
         TriggerClientEvent('esx:showNotification', source, "~r~You need bait to fish.")
     end
@@ -53,7 +62,7 @@ RegisterServerEvent('hw_fishing:catchFish')
 AddEventHandler('hw_fishing:catchFish', function(fishType)
     local xPlayer = ESX.GetPlayerFromId(source)
     xPlayer.addInventoryItem(fishType, 1)
-    debugAndDiscordLog("Player " .. xPlayer.getIdentifier() .. " caught a " .. fishType)
+    debugAndDiscordLog("Catching Fish", "Player " .. xPlayer.getIdentifier() .. " caught a " .. fishType)
 end)
 
 RegisterServerEvent('hw_fishing:sellAllFish')
