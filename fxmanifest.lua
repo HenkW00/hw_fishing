@@ -3,7 +3,7 @@ games { 'gta5' }
 
 author 'Henk W'
 description 'Advanced Fishing Script'
-version '0.1.1'
+version '0.1.2'
 
 client_scripts {
     'client/main.lua',
